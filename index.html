@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DES Store | Burak</title>
+    <style>
+        :root { --main-green: #238636; --dark-bg: #0b0f19; --card-bg: #161b22; --border-color: #30363d; }
+        body { background: var(--dark-bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+        header { background: var(--card-bg); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main-green); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: bold; cursor: pointer; }
+        .logo span { color: var(--main-green); }
+        #searchInput { background: #0d1117; border: 1px solid var(--border-color); color: #fff; padding: 10px 20px; border-radius: 20px; width: 200px; outline: none; }
+        .container { display: flex; padding: 20px; gap: 20px; }
+        .sidebar { width: 180px; flex-shrink: 0; }
+        .sidebar button { width: 100%; background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 12px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; text-align: left; font-weight: bold; font-size: 13px; }
+        .sidebar button:hover { background: var(--main-green); }
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; width: 100%; }
+        .app-card { background: var(--card-bg); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border-color); transition: 0.3s; }
+        .app-card:hover { transform: translateY(-5px); border-color: var(--main-green); }
+        .app-card img { width: 70px; height: 70px; border-radius: 15px; margin-bottom: 10px; object-fit: cover; background: #21262d; }
+        .app-card h4 { margin: 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-dl { display: block; background: var(--main-green); color: white; text-decoration: none; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-top: 10px; }
+        
+        #mainUI { display: block; }
+        #downloadUI { display: none; text-align: center; padding: 80px 20px; }
+        .progress-bar { width: 100%; max-width: 300px; background: #30363d; height: 10px; border-radius: 5px; margin: 20px auto; overflow: hidden; }
+        .fill { background: var(--main-green); height: 100%; width: 0%; transition: 0.1s; }
+    </style>
+</head>
+<body>
+
+    <div id="mainUI">
+        <header>
+            <div class="logo">DES<span>Store</span></div>
+            <input type="text" id="searchInput" placeholder="Ara..." onkeyup="searchApp()">
+        </header>
+
+        <div class="container">
+            <aside class="sidebar">
+                <button onclick="filterCat('Hepsi')">🏠 Ana Sayfa</button>
+                <button onclick="filterCat('Oyun')">🎮 Oyunlar</button>
+                <button onclick="filterCat('Araçlar')">🛠️ Araçlar</button>
+                <button onclick="filterCat('Sosyal')">💬 Sosyal</button>
+            </aside>
+            <main id="appGrid" class="app-grid"></main>
+        </div>
+    </div>
+
+    <div id="downloadUI">
+        <h2 id="dlAppName">...</h2>
+        <div class="progress-bar"><div id="progress" class="fill"></div></div>
+        <p id="dlStatus">Sunucuya bağlanılıyor...</p>
+    </div>
+
+    <script>
+        const apps = [
+            // SİZİN ÖZEL APK'NIZ
+            { id: 100, name: "SJ App Pro", cat: "Oyun", icon: "https://img.icons8.com/fluency/100/star.png", apk: "https://github.com/bro635756-spec/SJ-Store/raw/main/SJ_app.apk" },
+            
+            // OYUNLAR
+            { id: 1, name: "Brawl Stars", cat: "Oyun", icon: "https://img.icons8.com/color/100/brawl-stars.png", apk: "https://d.taptap.io/latest/brawlstars.apk" },
+            { id: 2, name: "PUBG Mobile", cat: "Oyun", icon: "https://img.icons8.com/color/100/pubg.png", apk: "https://pubgmobile.live/apk" },
+            { id: 3, name: "Roblox", cat: "Oyun", icon: "https://img.icons8.com/color/100/roblox.png", apk: "https://www.roblox.com/download/client?os=android" },
+            { id: 4, name: "Minecraft", cat: "Oyun", icon: "https://img.icons8.com/color/100/minecraft-main.png", apk: "#" },
+            { id: 5, name: "FNAF 1", cat: "Oyun", icon: "https://img.icons8.com/color/100/freddy-krueger.png", apk: "#" },
+            { id: 6, name: "Subway Surfers", cat: "Oyun", icon: "https://img.icons8.com/color/100/subway-surfers.png", apk: "#" },
+            { id: 7, name: "Among Us", cat: "Oyun", icon: "https://img.icons8.com/color/100/among-us.png", apk: "#" },
+            { id: 8, name: "Clash Royale", cat: "Oyun", icon: "https://img.icons8.com/color/100/clash-royale.png", apk: "#" },
+            { id: 9, name: "Stumble Guys", cat: "Oyun", icon: "https://img.icons8.com/color/100/stumble-guys.png", apk: "#" },
+            { id: 10, name: "Garena Free Fire", cat: "Oyun", icon: "https://img.icons8.com/color/100/free-fire.png", apk: "#" },
+            
+            // SOSYAL VE ARAÇLAR
+            { id: 11, name: "WhatsApp Plus", cat: "Sosyal", icon: "https://img.icons8.com/color/100/whatsapp.png", apk: "https://cdn.whatsapp.net/android/2.21.11.17/WhatsApp.apk" },
+            { id: 12, name: "Instagram", cat: "Sosyal", icon: "https://img.icons8.com/color/100/instagram-new.png", apk: "#" },
+            { id: 13, name: "TikTok", cat: "Sosyal", icon: "https://img.icons8.com/color/100/tiktok.png", apk: "#" },
+            { id: 14, name: "YouTube", cat: "Sosyal", icon: "https://img.icons8.com/color/100/youtube-play.png", apk: "#" },
+            { id: 15, name: "Discord", cat: "Sosyal", icon: "https://img.icons8.com/color/100/discord-new-logo.png", apk: "#" },
+            { id: 16, name: "TrebEdit", cat: "Araçlar", icon: "https://img.icons8.com/color/100/code.png", apk: "#" },
+            { id: 17, name: "Godot Engine", cat: "Araçlar", icon: "https://img.icons8.com/color/100/godot-engine.png", apk: "#" },
+            { id: 18, name: "CapCut", cat: "Araçlar", icon: "https://img.icons8.com/color/100/video-editing.png", apk: "#" },
+            { id: 19, name: "ZArchiver", cat: "Araçlar", icon: "https://img.icons8.com/color/100/folder-invoices.png", apk: "#" },
+            { id: 20, name: "Spotify", cat: "Araçlar", icon: "https://img.icons8.com/color/100/spotify.png", apk: "#" }
+        ];
+
+        // 50'ye tamamlayan ek popüler isimler
+        const moreApps = ["Telegram", "Snapchat", "Netflix", "Zoom", "Pinterest", "Twitter X", "CapCut", "Candy Crush", "Hill Climb Racing", "Fruit Ninja", "Angry Birds", "Pou", "Talking Tom", "Temple Run 2", "Vector", "Jetpack Joyride", "Shadow Fight 2", "Head Ball 2", "Asphalt 9", "Call of Duty M", "FIFA Mobile", "eFootball 2024", "VPN Master", "HappyMod", "Lucky Patcher", "Aptoide", "Steam", "Twitch", "Reddit", "Shazam"];
+        
+        moreApps.forEach((name, index) => {
+            apps.push({
+                id: index + 21,
+                name: name,
+                cat: index < 20 ? "Oyun" : "Araçlar",
+                icon: `https://img.icons8.com/color/100/${name.toLowerCase().replace(" ", "-")}.png`,
+                apk: "https://github.com/bro635756-spec/SJ-Store/raw/main/SJ_app.apk"
+            });
+        });
+
+        function displayApps(list) {
+            document.getElementById('appGrid').innerHTML = list.map(app => `
+                <div class="app-card">
+                    <img src="${app.icon}" onerror="this.src='https://img.icons8.com/fluency/100/box.png'">
+                    <h4>${app.name}</h4>
+                    <a href="javascript:void(0)" onclick="startDownload(${app.id})" class="btn-dl">YÜKLE</a>
+                </div>
+            `).join('');
+        }
+
+        function startDownload(id) {
+            const app = apps.find(a => a.id === id);
+            document.getElementById('mainUI').style.display = 'none';
+            document.getElementById('downloadUI').style.display = 'block';
+            document.getElementById('dlAppName').innerText = app.name + " Hazırlanıyor";
+            
+            let p = 0;
+            const timer = setInterval(() => {
+                p += 5;
+                document.getElementById('progress').style.width = p + "%";
+                if(p == 50) document.getElementById('dlStatus').innerText = "APK Paketi oluşturuluyor...";
+                if(p >= 100) {
+                    clearInterval(timer);
+                    window.location.href = app.apk;
+                    setTimeout(() => location.reload(), 3000);
+                }
+            }, 70);
+        }
+
+        function searchApp() {
+            let term = document.getElementById('searchInput').value.toLowerCase();
+            displayApps(apps.filter(a => a.name.toLowerCase().includes(term)));
+        }
+
+        function filterCat(c) {
+            if(c === 'Hepsi') displayApps(apps);
+            else displayApps(apps.filter(a => a.cat === c));
+        }
+
+        window.onload = () => displayApps(apps);
+    </script>
+</body>
+</html>
