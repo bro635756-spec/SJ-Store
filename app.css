@@ -1,0 +1,5 @@
+.app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; width: 100%; }
+.app-card { background: #161b22; padding: 15px; border-radius: 12px; text-align: center; transition: 0.3s; border: 1px solid #30363d; }
+.app-card:hover { border-color: #2ea043; transform: translateY(-5px); }
+.app-card img { width: 80px; height: 80px; border-radius: 18px; }
+.btn-view { display: block; background: #238636; color: white; text-decoration: none; padding: 8px; border-radius: 6px; margin-top: 10px; font-size: 13px; }

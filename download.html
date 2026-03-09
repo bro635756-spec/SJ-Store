@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>İndirme Başlıyor</title>
+    <link rel="stylesheet" href="../css/download.css">
+</head>
+<body>
+    <div class="download-container">
+        <h2 id="appName">Dosya Hazırlanıyor...</h2>
+        <div class="progress-bar"><div id="progress" class="fill"></div></div>
+        <p id="status">Sunucuya bağlanılıyor...</p>
+        <a id="downloadBtn" href="#" style="display:none;" class="btn-final">Manuel İndir</a>
+    </div>
+
+    <script src="../kotlin/kotlin.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const app = appData.find(a => a.id == params.get('id'));
+
+        if (app) {
+            document.getElementById('appName').innerText = app.name;
+            let bar = document.getElementById('progress');
+            let p = 0;
+            let interval = setInterval(() => {
+                p += 5;
+                bar.style.width = p + "%";
+                if(p >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('status').innerText = "İndirme Başladı!";
+                    // GERÇEK İNDİRME TETİKLEYİCİ
+                    window.location.href = app.apk;
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

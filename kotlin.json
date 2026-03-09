@@ -1,0 +1,6 @@
+{
+  "engine": "V8",
+  "version": "1.2.0",
+  "debug": true,
+  "files": ["kotlin.js", "kotlin_builders.js"]
+}
