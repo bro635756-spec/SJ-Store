@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DES Store | Burak</title>
+    <style>
+        /* CSS ARTIK BURADA */
+        body { background: #0b0f19; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        header { background: #161b22; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2ea043; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: bold; }
+        .logo span { color: #2ea043; }
+        #searchInput { background: #0d1117; border: 1px solid #30363d; color: #fff; padding: 10px 20px; border-radius: 20px; width: 250px; outline: none; }
+        .container { display: flex; padding: 20px; gap: 20px; }
+        .sidebar { width: 180px; }
+        .sidebar button { width: 100%; background: #161b22; border: 1px solid #30363d; color: white; padding: 12px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.3s; }
+        .sidebar button:hover { background: #238636; border-color: #2ea043; }
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; width: 100%; }
+        .app-card { background: #161b22; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #30363d; transition: 0.3s; }
+        .app-card:hover { transform: translateY(-5px); border-color: #2ea043; }
+        .app-card img { width: 80px; height: 80px; border-radius: 18px; margin-bottom: 10px; }
+        .btn-view { display: block; background: #238636; color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">DES<span>Store</span></div>
+        <input type="text" id="searchInput" placeholder="Oyun ara..." onkeyup="searchApp()">
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <button onclick="filterCat('Hepsi')">Hepsi</button>
+            <button onclick="filterCat('Oyun')">Oyunlar</button>
+            <button onclick="filterCat('Araçlar')">Araçlar</button>
+        </aside>
+        <main id="appGrid" class="app-grid"></main>
+    </div>
+
+    <script>
+        /* JAVASCRIPT ARTIK BURADA */
+        const appData = [
+            { 
+                id: 100, 
+                name: "SJ App Pro", 
+                cat: "Oyun", 
+                icon: "https://img.icons8.com/fluency/100/star.png",
+                apk: "https://github.com/bro635756-spec/SJ-Store/raw/main/SJ_app.apk" 
+            },
+            { 
+                id: 1, 
+                name: "Brawl Stars", 
+                cat: "Oyun", 
+                icon: "https://img.icons8.com/color/100/brawl-stars.png", 
+                apk: "https://d.taptap.io/latest/brawlstars.apk" 
+            },
+            { 
+                id: 3, 
+                name: "WhatsApp Plus", 
+                cat: "Araçlar", 
+                icon: "https://img.icons8.com/color/100/whatsapp.png", 
+                apk: "https://cdn.whatsapp.net/android/2.21.11.17/WhatsApp.apk" 
+            }
+        ];
+
+        function displayApps(list) {
+            const grid = document.getElementById('appGrid');
+            if (!grid) return;
+            grid.innerHTML = list.map(app => `
+                <div class="app-card">
+                    <img src="${app.icon}">
+                    <h4>${app.name}</h4>
+                    <p style="font-size:12px; color:#8b949e;">${app.cat}</p>
+                    <a href="download.html?id=${app.id}" class="btn-view">İNDİR</a>
+                </div>
+            `).join('');
+        }
+
+        function searchApp() {
+            let term = document.getElementById('searchInput').value.toLowerCase();
+            displayApps(appData.filter(a => a.name.toLowerCase().includes(term)));
+        }
+
+        function filterCat(category) {
+            if(category === 'Hepsi') return displayApps(appData);
+            displayApps(appData.filter(a => a.cat === category));
+        }
+
+        document.addEventListener("DOMContentLoaded", () => displayApps(appData));
+    </script>
+</body>
+</html>
